@@ -8,8 +8,8 @@ public class Matrice {
 
     Cellule[][] grille;
     Cellule[][] ancienneGrille;
-    int taille;
-    double densite = 0.1;
+    static int taille;
+    double densite = 0.3;
 
     public Matrice() {
         grille = new Cellule[20][20];
@@ -18,8 +18,8 @@ public class Matrice {
         init();
     }
 
-    public Matrice(int taille, double densite) {
-        this.taille = taille;
+    public Matrice(int _taille, double densite) {
+        taille = _taille;
         this.densite = densite;
         grille = new Cellule[taille][taille];
         ancienneGrille = new Cellule[taille][taille];

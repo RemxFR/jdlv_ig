@@ -6,10 +6,10 @@ import javafx.scene.shape.Circle;
 
 public class Cellule implements Cloneable {
 
-    static final int sousPopulation = 1;
-    static final int surPopulation = 4;
-    static int minPopulationRegeneratrice = 3;
-    static int maxPopulationRegeneratrice = 3;
+    public static int sousPopulation = 1;
+    public static int surPopulation = 4;
+    public static int minPopulationRegeneratrice = 3;
+    public static int maxPopulationRegeneratrice = minPopulationRegeneratrice + 1;
     boolean etatPrecedant;
     boolean estVivante;
     int x, y;
@@ -46,7 +46,7 @@ public class Cellule implements Cloneable {
         etatPrecedant = estVivante;
         if (estVivante && (nbVivante <= sousPopulation || nbVivante >= surPopulation)) {
             estVivante = false;
-        } else if (nbVivante >= minPopulationRegeneratrice && nbVivante <= maxPopulationRegeneratrice){
+        } else if (nbVivante == minPopulationRegeneratrice){
             estVivante = true;
         }
         changerCouleur();

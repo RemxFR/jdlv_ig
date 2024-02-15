@@ -1,6 +1,7 @@
 package org.ynov.jdlv_ig;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -19,6 +20,7 @@ public class StartApplication extends Application {
         stage.setScene(scene);
         stage.show();
         System.out.println("Lancement de la connexion de la Socket");
+        stage.setOnCloseRequest(e -> Platform.exit());
     }
 
     public static void main(String[] args) {

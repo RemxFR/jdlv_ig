@@ -14,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.ynov.jdlv_ig.logique.User;
+import org.ynov.jdlv_ig.utils.UserInfosSingleton;
 
 import java.io.IOException;
 import java.util.Map;
@@ -43,6 +44,8 @@ public class ConnexionController {
             Map<User, Integer> response = connexionBackend.seConnecter(User.builder().login(loginField.getText()).mdp(mdpField.getText()).build());
             if(!response.isEmpty()) {
                 System.out.println(response.values());
+                User user = response.keySet().iterator().next();
+                UserInfosSingleton.getInstance(user);
                 Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 Parent root = FXMLLoader.load(getClass().getResource("game-view.fxml"));
                 Scene gameScene = new Scene(root);
