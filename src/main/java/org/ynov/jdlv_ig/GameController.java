@@ -6,15 +6,16 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -35,11 +36,12 @@ import org.ynov.jdlv_ig.websocket.SocketClient;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
-import java.util.EventListener;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
 
+    @FXML
+    private SpinnerValueFactory.IntegerSpinnerValueFactory grilleSpinValeur;
     Matrice matrice;
     public static Circle[][] circles;
     public final int tempo = 100;
@@ -68,17 +70,21 @@ public class GameController implements Initializable {
     private Button propReglesBtn;
 
     @FXML
-    private Spinner<Integer> sousPoSpin, surPoSpin, reproSpin, tailleGrilleSpin;
-
+    private Spinner<Integer> sousPoSpin;
     @FXML
+    Spinner<Integer> surPoSpin;
+    @FXML
+    Spinner<Integer> reproSpin;
+    @FXML
+    Spinner<Integer> tailleGrilleSpin = new Spinner<>(new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 100));
     private CheckBox tdgCB, tdgSrP, tdgRepro, tdgSsP;
-
     @Getter
     private static int tgs;
-    private static boolean ouiBtnClic = false;
-    private static boolean nonBtnClic = false;
-
     private SocketClient client;
+    private final String TAILLE_GRILLE_SPINNER = "tailleGrilleSpin";
+    private final String REPRO_SPINNER = "reproSpinr";
+    private final String SURPO_SPINNER = "surpopSpin";
+    private final String SOUSPO_SPINNER = "souspopSpin";
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -94,10 +100,10 @@ public class GameController implements Initializable {
             chronologie = new Timeline();
             int largeur = 500;
             espace = largeur / taille;
-            tailleGrilleSpin.getValueFactory().setValue(taille);
-            sousPoSpin.getValueFactory().setValue(Cellule.sousPopulation);
-            surPoSpin.getValueFactory().setValue(Cellule.surPopulation);
-            reproSpin.getValueFactory().setValue(Cellule.minPopulationRegeneratrice);
+            this.tailleGrilleSpin.getValueFactory().setValue(taille);
+            this.sousPoSpin.getValueFactory().setValue(Cellule.sousPopulation);
+            this.surPoSpin.getValueFactory().setValue(Cellule.surPopulation);
+            this.reproSpin.getValueFactory().setValue(Cellule.minPopulationRegeneratrice);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -115,9 +121,11 @@ public class GameController implements Initializable {
     @FXML
     protected void lancerjdlv() {
         taille = tailleGrilleSpin.getValueFactory().getValue();
-        Cellule.sousPopulation = sousPoSpin.getValueFactory().getValue();
-        Cellule.surPopulation = surPoSpin.getValueFactory().getValue();
-        Cellule.minPopulationRegeneratrice = reproSpin.getValueFactory().getValue();
+        this.grilleSpinValeur.setValue(taille);
+        System.out.println("taille: " + this.grilleSpinValeur.getValue() + "...");
+        Cellule.sousPopulation = this.sousPoSpin.getValueFactory().getValue();
+        Cellule.surPopulation = this.surPoSpin.getValueFactory().getValue();
+        Cellule.minPopulationRegeneratrice = this.reproSpin.getValueFactory().getValue();
         matrice = new Matrice(taille, nb);
         GameController.circles = new Circle[taille][taille];
         group.setStyle("-fx-background-color: black;");
@@ -182,9 +190,12 @@ public class GameController implements Initializable {
         }
     }
 
-    public static void afficherMessageRecu(String message, VBox vBox) {
+    public void afficherMessageRecu(String message, VBox vBox) {
         Text text = null;
         TextFlow textFlow = null;
+        TextFlow textFlowWithoutBtn;
+        TextFlow textFlowWithBtn;
+        String[] reglesValues = null;
         Button ouiBtn = new Button("Oui");
         Button nonBtn = new Button("Non");
 
@@ -194,24 +205,15 @@ public class GameController implements Initializable {
 
         String regles = ConvertirMessageEnInstruction.convertirMessageEnInstruction(message);
         if (regles != null) {
-            String[] reglesValues = regles.split(",");
             String reglesProposees = ConvertirMessageEnInstruction.convertirReglesRowEnProposition(regles);
-            ouiBtn.setOnAction(new EventHandler<ActionEvent>() {
-                                   @Override
-                                   public void handle(ActionEvent event) {
-                                       ouiBtnClic = true;
-                                   }
-                               }
-                   );
-            nonBtn.setOnAction(e -> {
-                nonBtn.setVisible(false);
-                ouiBtn.setVisible(false);
-            });
             text = new Text(reglesProposees);
-            textFlow = new TextFlow(text, ouiBtn, nonBtn);
+            textFlowWithBtn = new TextFlow(text, ouiBtn, nonBtn);
+            nonBtn.setOnAction(e -> supprimerBoutonDuCommentaire(textFlowWithBtn, ouiBtn, nonBtn));
+            textFlow = textFlowWithBtn;
         } else {
             text = new Text(message);
-            textFlow = new TextFlow(text);
+            textFlowWithoutBtn = new TextFlow(text);
+            textFlow = textFlowWithoutBtn;
         }
 
         textFlow.setStyle("-fx-color: rgb(239,242, 255);" +
@@ -221,33 +223,65 @@ public class GameController implements Initializable {
         textFlow.setPadding(new Insets(5, 10, 5, 10));
         hBox.getChildren().add(textFlow);
 
+
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 vBox.getChildren().add(hBox);
+                ouiBtn.addEventHandler(ActionEvent.ACTION, event -> {
+                    String[] reglesValeurs = regles.split(",");
+                    accepterEtAppliquerRegles(
+                            ouiBtn,
+                            vBox,
+                            Integer.parseInt(reglesValeurs[0]),
+                            Integer.parseInt(reglesValeurs[1]),
+                            Integer.parseInt(reglesValeurs[2]),
+                            Integer.parseInt(reglesValeurs[3]));
+                });
+
             }
         });
     }
 
     @FXML
     private void proposerRegles() {
-        int tailleGrille = tailleGrilleSpin.getValueFactory().getValue();
-        int repro = reproSpin.getValueFactory().getValue();
-        int surPop = surPoSpin.getValueFactory().getValue();
-        int sousPop = sousPoSpin.getValueFactory().getValue();
+        int tailleGrille = this.tailleGrilleSpin.getValueFactory().getValue();
+        int repro = this.reproSpin.getValueFactory().getValue();
+        int surPop = this.surPoSpin.getValueFactory().getValue();
+        int sousPop = this.sousPoSpin.getValueFactory().getValue();
         String reglesProposees = "->r:[%s,%s,%s,%s]";
         String reglesOk = String.format(reglesProposees, tailleGrille, repro, surPop, sousPop);
         System.out.println(reglesOk);
         this.client.sendMessage(reglesOk);
     }
 
-    @FXML
-    private void accepterEtAppliquerRegles(int tailleGrille, int repro, int surpop, int souspop) {
-        if(ouiBtnClic) {
-            tailleGrilleSpin.getValueFactory().setValue(tailleGrille);
-            reproSpin.getValueFactory().setValue(repro);
-            surPoSpin.getValueFactory().setValue(surpop);
-            sousPoSpin.getValueFactory().setValue(souspop);
+    private void accepterEtAppliquerRegles(Button button, VBox vBox, int tailleGrille, int repro, int surpop, int souspop) {
+        AnchorPane anchorPane = (AnchorPane) vBox.getParent().getParent().getParent().getParent();
+
+        for (Node child : anchorPane.getChildren()) {
+            if (child instanceof Spinner<?>) {
+                if (child.getId().equals(TAILLE_GRILLE_SPINNER)) {
+                    ((Spinner<Integer>) child).getValueFactory().setValue(tailleGrille);
+                }
+                if (child.getId().equals(REPRO_SPINNER)) {
+                    ((Spinner<Integer>) child).getValueFactory().setValue(repro);
+                }
+                if (child.getId().equals(SURPO_SPINNER)) {
+                    ((Spinner<Integer>) child).getValueFactory().setValue(surpop);
+                }
+                if (child.getId().equals(SOUSPO_SPINNER)) {
+                    ((Spinner<Integer>) child).getValueFactory().setValue(souspop);
+                }
+            }
         }
+        TextFlow textFlow = (TextFlow) button.getParent();
+        Button buttonNon = (Button) textFlow.getChildren().get(2);
+        supprimerBoutonDuCommentaire((TextFlow) button.getParent(), button, buttonNon);
+    }
+
+    private void supprimerBoutonDuCommentaire(TextFlow textFlow, Button ouiBtn, Button nonBtn) {
+        textFlow.getChildren().removeAll(ouiBtn, nonBtn);
+        textFlow.isResizable();
+        textFlow.autosize();
     }
 }

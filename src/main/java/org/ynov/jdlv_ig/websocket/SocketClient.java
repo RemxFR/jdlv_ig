@@ -29,9 +29,6 @@ public class SocketClient {
     public void sendMessage(String text) {
         boolean  messageEnvoye = false;
         try {
-//                bufferedWriter.write(username);
-//                bufferedWriter.newLine();
-//                bufferedWriter.flush();
             while (socket.isConnected() && !messageEnvoye) {
                 bufferedWriter.write(username + ": " + text);
                 bufferedWriter.newLine();
@@ -52,7 +49,8 @@ public class SocketClient {
                 while (socket.isConnected()) {
                     try {
                         msgFromServer = bufferedReader.readLine();
-                        GameController.afficherMessageRecu(msgFromServer, vBox);
+                        GameController gameController = new GameController();
+                        gameController.afficherMessageRecu(msgFromServer, vBox);
                     } catch (IOException e) {
                         closeEverything(socket, bufferedReader, bufferedWriter);
                     }

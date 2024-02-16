@@ -1,5 +1,6 @@
 package org.ynov.jdlv_ig;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -51,6 +52,7 @@ public class ConnexionController {
                 Scene gameScene = new Scene(root);
                 window.setScene(gameScene);
                 window.show();
+                window.setOnCloseRequest(e -> Platform.exit());
             }
 
 
