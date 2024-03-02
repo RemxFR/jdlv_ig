@@ -2,34 +2,24 @@ package org.ynov.jdlv_ig;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import org.ynov.jdlv_ig.logique.Cellule;
 import org.ynov.jdlv_ig.logique.Matrice;
 import org.ynov.jdlv_ig.logique.User;
-import org.ynov.jdlv_ig.utils.ConvertirMessageEnInstruction;
+import org.ynov.jdlv_ig.service.TchatService;
 import org.ynov.jdlv_ig.utils.UserInfosSingleton;
 import org.ynov.jdlv_ig.websocket.SocketClient;
 
@@ -81,10 +71,6 @@ public class GameController implements Initializable {
     @Getter
     private static int tgs;
     private SocketClient client;
-    private final String TAILLE_GRILLE_SPINNER = "tailleGrilleSpin";
-    private final String REPRO_SPINNER = "reproSpinr";
-    private final String SURPO_SPINNER = "surpopSpin";
-    private final String SOUSPO_SPINNER = "souspopSpin";
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -122,7 +108,7 @@ public class GameController implements Initializable {
     protected void lancerjdlv() {
         taille = tailleGrilleSpin.getValueFactory().getValue();
         this.grilleSpinValeur.setValue(taille);
-        System.out.println("taille: " + this.grilleSpinValeur.getValue() + "...");
+
         Cellule.sousPopulation = this.sousPoSpin.getValueFactory().getValue();
         Cellule.surPopulation = this.surPoSpin.getValueFactory().getValue();
         Cellule.minPopulationRegeneratrice = this.reproSpin.getValueFactory().getValue();
@@ -150,26 +136,12 @@ public class GameController implements Initializable {
         if (!tchatTextField.getText().isEmpty() || !tchatTextField.getText().isBlank()) {
             tchatTextField.setOnKeyPressed(event1 -> {
                 if (event1.getCode() == KeyCode.ENTER) {
-                    HBox hBox = new HBox();
-                    hBox.setAlignment(Pos.CENTER_RIGHT);
-                    hBox.setPadding(new Insets(5, 5, 5, 10));
-
-                    Text text = new Text(tchatTextField.getText());
-                    TextFlow textFlow = new TextFlow(text);
-                    textFlow.setStyle("-fx-color: rgb(239,242, 255);" +
-                            "-fx-background-color:rgb(15,125,242);" +
-                            "-fx-background-radius: 20px");
-                    textFlow.setPadding(new Insets(5, 10, 5, 10));
-                    text.setFill(Color.WHITE);
-                    hBox.getChildren().add(textFlow);
-                    tchatVBox.getChildren().add(hBox);
-                    this.client.sendMessage(tchatTextField.getText());
+                    TchatService.creerEtEnvoyerMessage(this.client, this.tchatVBox, this.tchatTextField.getText());
                     tchatTextField.clear();
                 }
             });
         }
     }
-
 
     private void dessinMatrice(Group root) {
         Cellule[][] grille = matrice.getGrille();
@@ -185,62 +157,9 @@ public class GameController implements Initializable {
                 }
                 cell.setCircle(circles[i][j]);
                 root.getChildren().add(circles[i][j]);
-                root.setStyle("-fx-background-color: black;");
+                root.setStyle("-fx-: black;");
             }
         }
-    }
-
-    public void afficherMessageRecu(String message, VBox vBox) {
-        Text text = null;
-        TextFlow textFlow = null;
-        TextFlow textFlowWithoutBtn;
-        TextFlow textFlowWithBtn;
-        String[] reglesValues = null;
-        Button ouiBtn = new Button("Oui");
-        Button nonBtn = new Button("Non");
-
-        HBox hBox = new HBox();
-        hBox.setAlignment(Pos.CENTER_LEFT);
-        hBox.setPadding(new Insets(5, 5, 5, 10));
-
-        String regles = ConvertirMessageEnInstruction.convertirMessageEnInstruction(message);
-        if (regles != null) {
-            String reglesProposees = ConvertirMessageEnInstruction.convertirReglesRowEnProposition(regles);
-            text = new Text(reglesProposees);
-            textFlowWithBtn = new TextFlow(text, ouiBtn, nonBtn);
-            nonBtn.setOnAction(e -> supprimerBoutonDuCommentaire(textFlowWithBtn, ouiBtn, nonBtn));
-            textFlow = textFlowWithBtn;
-        } else {
-            text = new Text(message);
-            textFlowWithoutBtn = new TextFlow(text);
-            textFlow = textFlowWithoutBtn;
-        }
-
-        textFlow.setStyle("-fx-color: rgb(239,242, 255);" +
-                "-fx-background-color:rgb(233,233, 235);" +
-                "-fx-background-radius: 20px");
-        textFlow.setPadding(new Insets(5, 10, 5, 10));
-        textFlow.setPadding(new Insets(5, 10, 5, 10));
-        hBox.getChildren().add(textFlow);
-
-
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                vBox.getChildren().add(hBox);
-                ouiBtn.addEventHandler(ActionEvent.ACTION, event -> {
-                    String[] reglesValeurs = regles.split(",");
-                    accepterEtAppliquerRegles(
-                            ouiBtn,
-                            vBox,
-                            Integer.parseInt(reglesValeurs[0]),
-                            Integer.parseInt(reglesValeurs[1]),
-                            Integer.parseInt(reglesValeurs[2]),
-                            Integer.parseInt(reglesValeurs[3]));
-                });
-
-            }
-        });
     }
 
     @FXML
@@ -251,37 +170,7 @@ public class GameController implements Initializable {
         int sousPop = this.sousPoSpin.getValueFactory().getValue();
         String reglesProposees = "->r:[%s,%s,%s,%s]";
         String reglesOk = String.format(reglesProposees, tailleGrille, repro, surPop, sousPop);
-        System.out.println(reglesOk);
-        this.client.sendMessage(reglesOk);
+        TchatService.creerEtEnvoyerMessage(this.client, this.tchatVBox, reglesOk);
     }
 
-    private void accepterEtAppliquerRegles(Button button, VBox vBox, int tailleGrille, int repro, int surpop, int souspop) {
-        AnchorPane anchorPane = (AnchorPane) vBox.getParent().getParent().getParent().getParent();
-
-        for (Node child : anchorPane.getChildren()) {
-            if (child instanceof Spinner<?>) {
-                if (child.getId().equals(TAILLE_GRILLE_SPINNER)) {
-                    ((Spinner<Integer>) child).getValueFactory().setValue(tailleGrille);
-                }
-                if (child.getId().equals(REPRO_SPINNER)) {
-                    ((Spinner<Integer>) child).getValueFactory().setValue(repro);
-                }
-                if (child.getId().equals(SURPO_SPINNER)) {
-                    ((Spinner<Integer>) child).getValueFactory().setValue(surpop);
-                }
-                if (child.getId().equals(SOUSPO_SPINNER)) {
-                    ((Spinner<Integer>) child).getValueFactory().setValue(souspop);
-                }
-            }
-        }
-        TextFlow textFlow = (TextFlow) button.getParent();
-        Button buttonNon = (Button) textFlow.getChildren().get(2);
-        supprimerBoutonDuCommentaire((TextFlow) button.getParent(), button, buttonNon);
-    }
-
-    private void supprimerBoutonDuCommentaire(TextFlow textFlow, Button ouiBtn, Button nonBtn) {
-        textFlow.getChildren().removeAll(ouiBtn, nonBtn);
-        textFlow.isResizable();
-        textFlow.autosize();
-    }
 }

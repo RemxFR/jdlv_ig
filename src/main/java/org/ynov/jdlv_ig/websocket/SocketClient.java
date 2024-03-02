@@ -3,6 +3,7 @@ package org.ynov.jdlv_ig.websocket;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import org.ynov.jdlv_ig.GameController;
+import org.ynov.jdlv_ig.service.TchatService;
 
 import java.io.*;
 import java.net.Socket;
@@ -49,8 +50,7 @@ public class SocketClient {
                 while (socket.isConnected()) {
                     try {
                         msgFromServer = bufferedReader.readLine();
-                        GameController gameController = new GameController();
-                        gameController.afficherMessageRecu(msgFromServer, vBox);
+                        TchatService.afficherMessageRecu(msgFromServer, vBox);
                     } catch (IOException e) {
                         closeEverything(socket, bufferedReader, bufferedWriter);
                     }
