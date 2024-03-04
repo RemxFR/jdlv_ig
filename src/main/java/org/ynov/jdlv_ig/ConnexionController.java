@@ -14,7 +14,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.ynov.jdlv_ig.logique.User;
+import org.ynov.jdlv_ig.entity.UserDto;
+import org.ynov.jdlv_ig.http_controller.AuthentificationHttpController;
+import org.ynov.jdlv_ig.entity.User;
 import org.ynov.jdlv_ig.utils.UserInfosSingleton;
 
 import java.io.IOException;
@@ -41,16 +43,17 @@ public class ConnexionController {
         if ((loginField.getText() != null && !loginField.getText().equals(""))
         && mdpField.getText() != null && !mdpField.getText().equals("")) {
 
-            ConnexionBackend connexionBackend = new ConnexionBackend();
-            Map<User, Integer> response = connexionBackend.seConnecter(User.builder().login(loginField.getText()).mdp(mdpField.getText()).build());
+            AuthentificationHttpController connexionBackend = new AuthentificationHttpController();
+            Map<UserDto, Integer> response = connexionBackend.seConnecter(User.builder().login(loginField.getText()).mdp(mdpField.getText()).build());
             if(!response.isEmpty()) {
-                System.out.println(response.values());
-                User user = response.keySet().iterator().next();
-                UserInfosSingleton.getInstance(user);
+                UserDto userDto = response.keySet().iterator().next();
+                UserInfosSingleton.getInstance(userDto);
                 Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 Parent root = FXMLLoader.load(getClass().getResource("game-view.fxml"));
                 Scene gameScene = new Scene(root);
                 window.setScene(gameScene);
+                UserInfosSingleton.setStage(window);
+                UserInfosSingleton.getStage();
                 window.show();
                 window.setOnCloseRequest(e -> Platform.exit());
             }

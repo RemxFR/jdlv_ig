@@ -15,9 +15,6 @@ public class ConvertirMessageEnInstruction {
 
     public static String convertirReglesRowEnProposition(String regles) {
         String[] reglesTab = regles.split(",");
-        for (int i = 0; i < reglesTab.length; i++) {
-            System.out.println("Regles " + i + ": " + reglesTab[i]);
-        }
         String reglesProposees = "Règles proposées:\n" +
                 "taille grille: " + reglesTab[0] +
                 "\nReproduction: " + reglesTab[1] +

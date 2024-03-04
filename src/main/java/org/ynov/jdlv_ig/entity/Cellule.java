@@ -1,11 +1,12 @@
-package org.ynov.jdlv_ig.logique;
+package org.ynov.jdlv_ig.entity;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-
+import lombok.extern.java.Log;
+import org.ynov.jdlv_ig.utils.LoggerUtil;
 
 public class Cellule implements Cloneable {
-
+    LoggerUtil logger = new LoggerUtil();
     public static int sousPopulation = 1;
     public static int surPopulation = 4;
     public static int minPopulationRegeneratrice = 3;
@@ -77,7 +78,7 @@ public class Cellule implements Cloneable {
         try {
             o = super.clone();
         } catch (CloneNotSupportedException e) {
-            System.err.println("Cellule impossible a cloner...");
+            this.logger.log(System.Logger.Level.ERROR, "Cellule impossible a cloner...");
         }
         return o;
     }

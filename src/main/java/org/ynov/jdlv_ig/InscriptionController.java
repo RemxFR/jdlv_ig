@@ -10,7 +10,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.ynov.jdlv_ig.logique.User;
+import org.ynov.jdlv_ig.entity.UserDto;
+import org.ynov.jdlv_ig.http_controller.AuthentificationHttpController;
 import org.ynov.jdlv_ig.utils.UserInfosSingleton;
 
 import java.io.IOException;
@@ -25,16 +26,19 @@ public class InscriptionController {
     @FXML
     public void inscription(ActionEvent event) throws IOException, InterruptedException {
         if ((login != null && !login.equals("")) && (mdp != null && !mdp.equals(""))) {
-            ConnexionBackend req = new ConnexionBackend();
-            User newUser = User.builder().login(login.getText()).mdp(mdp.getText()).build();
-            boolean inscriptionValidee = req.inscireUser(newUser);
+            AuthentificationHttpController req = new AuthentificationHttpController();
+            UserDto newUserDto = UserDto.builder().login(login.getText()).mdp(mdp.getText()).build();
+            boolean inscriptionValidee = req.inscireUser(newUserDto);
             if (inscriptionValidee) {
-                UserInfosSingleton.getInstance(newUser);
+                UserInfosSingleton.getInstance(newUserDto);
                 Parent gameView = FXMLLoader.load(getClass().getResource("game-view.fxml"));
                 Scene gameScene = new Scene(gameView);
                 Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 window.setScene(gameScene);
+                UserInfosSingleton.setStage(window);
+                UserInfosSingleton.getStage();
                 window.show();
+
                 window.setOnCloseRequest(e -> Platform.exit());
             }
         }

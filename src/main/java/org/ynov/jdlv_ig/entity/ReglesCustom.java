@@ -1,4 +1,4 @@
-package org.ynov.jdlv_ig.logique;
+package org.ynov.jdlv_ig.entity;
 
 public class ReglesCustom {
 
@@ -7,13 +7,21 @@ public class ReglesCustom {
     private int sousPopulation;
     private int reproduction;
     private int tailleGrille;
+    private User user;
 
-    public ReglesCustom(Integer id, int surPopulation, int sousPopulation, int reproduction, int tailleGrille, User user) {
-        this.id = id;
+    public ReglesCustom(int surPopulation, int sousPopulation, int reproduction, int tailleGrille) {
         this.surPopulation = surPopulation;
         this.sousPopulation = sousPopulation;
         this.reproduction = reproduction;
         this.tailleGrille = tailleGrille;
+    }
+
+    public ReglesCustom(int surPopulation, int sousPopulation, int reproduction, int tailleGrille, User user) {
+        this.surPopulation = surPopulation;
+        this.sousPopulation = sousPopulation;
+        this.reproduction = reproduction;
+        this.tailleGrille = tailleGrille;
+        this.user = user;
     }
 
     public ReglesCustom() {
@@ -57,5 +65,13 @@ public class ReglesCustom {
 
     public void setTailleGrille(int tailleGrille) {
         this.tailleGrille = tailleGrille;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

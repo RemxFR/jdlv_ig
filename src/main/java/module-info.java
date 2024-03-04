@@ -7,10 +7,13 @@ module org.ynov.jdlv_ig {
     requires java.net.http;
     requires static lombok;
     requires org.json;
+    requires org.apache.commons.lang3;
 
     opens org.ynov.jdlv_ig to javafx.fxml;
     exports org.ynov.jdlv_ig;
-    exports org.ynov.jdlv_ig.logique;
-    opens org.ynov.jdlv_ig.logique to javafx.fxml;
+    exports org.ynov.jdlv_ig.entity;
+    opens org.ynov.jdlv_ig.entity to javafx.fxml;
+    exports org.ynov.jdlv_ig.http_controller;
+    opens org.ynov.jdlv_ig.http_controller to javafx.fxml;
 
 }

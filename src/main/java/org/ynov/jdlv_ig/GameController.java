@@ -4,6 +4,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -16,9 +18,8 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
-import org.ynov.jdlv_ig.logique.Cellule;
-import org.ynov.jdlv_ig.logique.Matrice;
-import org.ynov.jdlv_ig.logique.User;
+import org.ynov.jdlv_ig.entity.*;
+import org.ynov.jdlv_ig.http_controller.ReglesHttpController;
 import org.ynov.jdlv_ig.service.TchatService;
 import org.ynov.jdlv_ig.utils.UserInfosSingleton;
 import org.ynov.jdlv_ig.websocket.SocketClient;
@@ -26,6 +27,7 @@ import org.ynov.jdlv_ig.websocket.SocketClient;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
@@ -67,41 +69,56 @@ public class GameController implements Initializable {
     Spinner<Integer> reproSpin;
     @FXML
     Spinner<Integer> tailleGrilleSpin = new Spinner<>(new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 100));
+    @FXML
+    ListView<ReglesCustom> reglesListView;
     private CheckBox tdgCB, tdgSrP, tdgRepro, tdgSsP;
     @Getter
     private static int tgs;
     private SocketClient client;
+    private UserDto userDto;
+    private ReglesHttpController reglesHttpController = new ReglesHttpController();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        try {
-            Socket socket = new Socket("localhost", 1234);
-            User user = UserInfosSingleton.getUser();
-            this.setUserName(user.getLogin());
-            this.client = new SocketClient(socket, this.getUserName());
-            this.propReglesBtn.setText("Proposer\nRègles");
-            this.propReglesBtn.setTextAlignment(TextAlignment.CENTER);
-            taille = 100;
-            nb = 0.1;
-            chronologie = new Timeline();
-            int largeur = 500;
-            espace = largeur / taille;
-            this.tailleGrilleSpin.getValueFactory().setValue(taille);
-            this.sousPoSpin.getValueFactory().setValue(Cellule.sousPopulation);
-            this.surPoSpin.getValueFactory().setValue(Cellule.surPopulation);
-            this.reproSpin.getValueFactory().setValue(Cellule.minPopulationRegeneratrice);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            try {
+                Socket socket = new Socket("localhost", 1234);
+                this.userDto = UserInfosSingleton.getUser();
+                this.setUserName(userDto.getLogin());
+                this.client = new SocketClient(socket, this.getUserName());
+                this.propReglesBtn.setText("Proposer\nRègles");
+                this.propReglesBtn.setTextAlignment(TextAlignment.CENTER);
+                taille = 100;
+                nb = 0.1;
+                chronologie = new Timeline();
+                int largeur = 500;
+                espace = largeur / taille;
+                this.tailleGrilleSpin.getValueFactory().setValue(taille);
+                this.sousPoSpin.getValueFactory().setValue(Cellule.sousPopulation);
+                this.surPoSpin.getValueFactory().setValue(Cellule.surPopulation);
+                this.reproSpin.getValueFactory().setValue(Cellule.minPopulationRegeneratrice);
+                //this.afficherReglesEnregistrees();
+                this.client.listenForMessage(tchatVBox);
 
 
-        tchatVBox.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
-                scrollPane.setVvalue((Double) newValue);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
-        this.client.listenForMessage(tchatVBox);
+
+
+            tchatVBox.heightProperty().addListener(new ChangeListener<Number>() {
+                @Override
+                public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
+                    scrollPane.setVvalue((Double) newValue);
+                }
+            });
+    }
+
+    public GameController() {
+//        Stage stage = UserInfosSingleton.getStage();
+//        stage.setOnCloseRequest(event -> {
+//            ThreadManagerService.killAllThread();
+//            Platform.exit();
+//        });
     }
 
     @FXML
@@ -171,6 +188,27 @@ public class GameController implements Initializable {
         String reglesProposees = "->r:[%s,%s,%s,%s]";
         String reglesOk = String.format(reglesProposees, tailleGrille, repro, surPop, sousPop);
         TchatService.creerEtEnvoyerMessage(this.client, this.tchatVBox, reglesOk);
+    }
+
+    @FXML
+    private void sauvegarderRegles() {
+        ReglesCustom reglesCustom = new ReglesCustom(
+                this.surPoSpin.getValueFactory().getValue(),
+                this.sousPoSpin.getValueFactory().getValue(),
+                this.reproSpin.getValueFactory().getValue(),
+                this.tailleGrilleSpin.getValueFactory().getValue());
+        reglesHttpController.sauverRegles(reglesCustom, this.userDto.getLogin());
+        this.reglesListView.refresh();
+    }
+
+    private void afficherReglesEnregistrees() {
+        List<ReglesCustom> reglesCustomList = this.recupererRegles();
+        ObservableList<ReglesCustom> reglesCustoms = FXCollections.observableArrayList(reglesCustomList);
+        reglesListView = new ListView<ReglesCustom>(reglesCustoms);
+    }
+
+    private List<ReglesCustom> recupererRegles() {
+        return reglesHttpController.recupererReglesCustom(this.userDto);
     }
 
 }

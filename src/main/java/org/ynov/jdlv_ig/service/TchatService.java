@@ -44,7 +44,7 @@ public abstract class TchatService {
         TextFlow textFlow = convertirMessagePourAffichage(message, regles, ouiBtn);
         ElementStyleService.styliserTextFlow(textFlow, ETypeMessage.AFFICHER);
         hBox.getChildren().add(textFlow);
-        Platform.runLater(new Runnable() {
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 vBox.getChildren().add(hBox);
@@ -58,9 +58,9 @@ public abstract class TchatService {
                             Integer.parseInt(reglesValeurs[2]),
                             Integer.parseInt(reglesValeurs[3]));
                 });
-
             }
         });
+        thread.start();
     }
 
     private static TextFlow convertirMessagePourAffichage(String message, String regles, Button ouiBtn) {

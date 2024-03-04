@@ -1,101 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Spinner?>
-<?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
 <?import javafx.scene.control.SpinnerValueFactory?>
-<AnchorPane id="anchorPane" fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-            minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ynov.jdlv_ig.GameController">
+
+<AnchorPane id="anchorPane" fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ynov.jdlv_ig.GameController" >
     <children>
-        <SplitPane dividerPositions="0.29797979797979796" prefHeight="800.0" prefWidth="800.0" fx:id="splitPane">
+        <SplitPane fx:id="splitPane" dividerPositions="0.29797979797979796" prefHeight="800.0" prefWidth="800.0">
             <items>
-                <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="800.0"
-                            prefWidth="300.0" fx:id="paneTchatEtRegles">
+                <AnchorPane fx:id="paneTchatEtRegles" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="800.0" prefWidth="300.0">
                     <children>
-                        <Label layoutX="129.0" layoutY="14.0" text="Tchat"/>
-                        <TextField fx:id="tchatTextField" layoutY="570.0" onKeyPressed="#ecrireTchat" prefHeight="25.0"
-                                   prefWidth="291.0"/>
-                        <Label layoutX="14.0" layoutY="677.0" text="Taille de la grille"/>
-                        <Spinner fx:id="tailleGrilleSpin" editable="true" layoutX="21.0" layoutY="701.0"
-                                 maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="96.0">
+                        <Label layoutX="129.0" layoutY="14.0" text="Tchat" />
+                        <TextField fx:id="tchatTextField" layoutY="570.0" onKeyPressed="#ecrireTchat" prefHeight="25.0" prefWidth="291.0" />
+                        <Label layoutX="14.0" layoutY="677.0" text="Taille de la grille" />
+                        <Spinner fx:id="tailleGrilleSpin" editable="true" layoutX="21.0" layoutY="701.0" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="96.0">
                             <valueFactory>
-                                <SpinnerValueFactory.IntegerSpinnerValueFactory fx:id="grilleSpinValeur" max="100"
-                                                                                min="10"/>
+                                <SpinnerValueFactory.IntegerSpinnerValueFactory fx:id="grilleSpinValeur" max="100" min="10" />
                             </valueFactory>
                         </Spinner>
-                        <Label layoutX="165.0" layoutY="677.0" text="Reproduction"/>
-                        <Spinner id="reproSpinr" fx:id="reproSpin" editable="true" layoutX="161.0" layoutY="701.0"
-                                 prefHeight="25.0" prefWidth="96.0">
+                        <Label layoutX="165.0" layoutY="677.0" text="Reproduction" />
+                        <Spinner id="reproSpinr" fx:id="reproSpin" editable="true" layoutX="161.0" layoutY="701.0" prefHeight="25.0" prefWidth="96.0">
                             <valueFactory>
-                                <SpinnerValueFactory.IntegerSpinnerValueFactory max="50" min="1"/>
+                                <SpinnerValueFactory.IntegerSpinnerValueFactory max="50" min="1" />
                             </valueFactory>
                         </Spinner>
-                        <Label layoutX="20.0" layoutY="736.0" text="Sur-population"/>
-                        <Spinner id="surpopSpin" fx:id="surPoSpin" editable="true" layoutX="22.0" layoutY="759.0"
-                                 prefHeight="25.0" prefWidth="96.0">
+                        <Label layoutX="20.0" layoutY="736.0" text="Sur-population" />
+                        <Spinner id="surpopSpin" fx:id="surPoSpin" editable="true" layoutX="22.0" layoutY="759.0" prefHeight="25.0" prefWidth="96.0">
                             <valueFactory>
-                                <SpinnerValueFactory.IntegerSpinnerValueFactory max="10" min="1"/>
+                                <SpinnerValueFactory.IntegerSpinnerValueFactory max="10" min="1" />
                             </valueFactory>
                         </Spinner>
-                        <Label layoutX="156.0" layoutY="736.0" text="Sous-population"/>
-                        <Spinner id="souspopSpin" fx:id="sousPoSpin" editable="true" layoutX="161.0" layoutY="759.0"
-                                 prefHeight="25.0" prefWidth="96.0">
+                        <Label layoutX="156.0" layoutY="736.0" text="Sous-population" />
+                        <Spinner id="souspopSpin" fx:id="sousPoSpin" editable="true" layoutX="161.0" layoutY="759.0" prefHeight="25.0" prefWidth="96.0">
                             <valueFactory>
-                                <SpinnerValueFactory.IntegerSpinnerValueFactory max="10" min="1"/>
+                                <SpinnerValueFactory.IntegerSpinnerValueFactory max="10" min="1" />
                             </valueFactory>
                         </Spinner>
-                        <Button id="startBtn" fx:id="startBtn" layoutX="172.0" layoutY="628.0" mnemonicParsing="false"
-                                onAction="#lancerjdlv">
+                        <Button id="startBtn" fx:id="startBtn" layoutX="172.0" layoutY="628.0" mnemonicParsing="false" onAction="#lancerjdlv">
                             <cursor>
-                                <Cursor fx:constant="HAND"/>
+                                <Cursor fx:constant="HAND" />
                             </cursor>
                             <graphic>
                                 <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
-                                        <Image url="@../../../assets/bouton-de-lecture.png"/>
+                                        <Image url="@../../../assets/bouton-de-lecture.png" />
                                     </image>
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button id="stopBtn" fx:id="stopBtn" layoutX="220.0" layoutY="628.0" mnemonicParsing="false"
-                                onAction="#arreterJdlv">
+                        <Button id="stopBtn" fx:id="stopBtn" layoutX="220.0" layoutY="628.0" mnemonicParsing="false" onAction="#arreterJdlv">
                             <cursor>
-                                <Cursor fx:constant="HAND"/>
+                                <Cursor fx:constant="HAND" />
                             </cursor>
                             <graphic>
                                 <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
-                                        <Image url="@../../../assets/carre-aux-coins-arrondis.png"/>
+                                        <Image url="@../../../assets/carre-aux-coins-arrondis.png" />
                                     </image>
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <ScrollPane id="scrollPane" fx:id="scrollPane" pannable="true" prefHeight="570.0"
-                                    prefWidth="290.0" vbarPolicy="NEVER">
+                        <ScrollPane id="scrollPane" fx:id="scrollPane" pannable="true" prefHeight="570.0" prefWidth="290.0" vbarPolicy="NEVER">
                             <content>
-                                <VBox fx:id="tchatVBox" prefHeight="570" prefWidth="270"/>
+                                <VBox fx:id="tchatVBox" prefHeight="570" prefWidth="270" />
                             </content>
                         </ScrollPane>
-                        <Button id="propReglesBtn" fx:id="propReglesBtn" layoutX="22.0" layoutY="617.0"
-                                mnemonicParsing="false" onAction="#proposerRegles"/>
+                        <Button id="propReglesBtn" fx:id="propReglesBtn" layoutX="22.0" layoutY="617.0" mnemonicParsing="false" onAction="#proposerRegles" />
                     </children>
                 </AnchorPane>
-                <AnchorPane maxHeight="800.0" maxWidth="500.0" minHeight="0.0" minWidth="0.0" prefHeight="800.0"
-                            prefWidth="500.0">
+                <AnchorPane maxHeight="800.0" maxWidth="500.0" minHeight="0.0" minWidth="0.0" prefHeight="800.0" prefWidth="500.0">
                     <children>
-                        <Group id="group" fx:id="group"/>
+                        <Group id="group" fx:id="group" />
+                  <HBox alignment="CENTER" layoutY="571.0" prefHeight="227.0" prefWidth="500.0" spacing="40.0">
+                     <children>
+                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="169.0" text="Sauver Règles" onAction="#sauvegarderRegles"/>
+                        <ListView fx:id="reglesListView" prefHeight="227.0" prefWidth="361.0" />
+                     </children>
+                     <opaqueInsets>
+                        <Insets left="10.0" />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets bottom="10.0" left="40.0" right="10.0" top="10.0" />
+                     </padding>
+                  </HBox>
                     </children>
                 </AnchorPane>
             </items>

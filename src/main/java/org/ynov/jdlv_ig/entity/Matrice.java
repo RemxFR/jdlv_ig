@@ -1,6 +1,4 @@
-package org.ynov.jdlv_ig.logique;
-
-import org.ynov.jdlv_ig.logique.Cellule;
+package org.ynov.jdlv_ig.entity;
 
 import java.util.Random;
 

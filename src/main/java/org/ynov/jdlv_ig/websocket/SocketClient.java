@@ -1,8 +1,6 @@
 package org.ynov.jdlv_ig.websocket;
 
-import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import org.ynov.jdlv_ig.GameController;
 import org.ynov.jdlv_ig.service.TchatService;
 
 import java.io.*;
@@ -10,20 +8,21 @@ import java.net.Socket;
 
 public class SocketClient {
 
-    private Socket socket;
-    private BufferedReader bufferedReader;
-    private BufferedWriter bufferedWriter;
+    private static Socket socket;
+    private static BufferedReader bufferedReader;
+    private static BufferedWriter bufferedWriter;
     private String username;
+    private Thread messageThread;
 
-    public SocketClient(Socket socket, String username) {
+    public SocketClient(Socket socketConnectee, String username) {
         try {
-            this.socket = socket;
+            socket = socketConnectee;
             this.username = username;
-            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.sendMessage(username);
         } catch (IOException e) {
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            closeEverything();
         }
     }
 
@@ -38,12 +37,12 @@ public class SocketClient {
                 messageEnvoye = true;
             }
         } catch (IOException e) {
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            closeEverything();
         }
     }
 
     public void listenForMessage(VBox vBox) {
-        new Thread(new Runnable() {
+        this.messageThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 String msgFromServer;
@@ -52,21 +51,21 @@ public class SocketClient {
                         msgFromServer = bufferedReader.readLine();
                         TchatService.afficherMessageRecu(msgFromServer, vBox);
                     } catch (IOException e) {
-                        closeEverything(socket, bufferedReader, bufferedWriter);
+                        closeEverything();
                     }
                 }
             }
-        }).start();
-
+        });
+        this.messageThread.start();
     }
 
-    public void closeEverything(Socket socket, BufferedReader reader, BufferedWriter writer) {
+    public static void closeEverything() {
         try {
-            if (reader != null) {
-                reader.close();
+            if (bufferedReader != null) {
+                bufferedReader.close();
             }
-            if (writer != null) {
-                writer.close();
+            if (bufferedWriter != null) {
+                bufferedWriter.close();
             }
             if (socket != null) {
                 socket.close();

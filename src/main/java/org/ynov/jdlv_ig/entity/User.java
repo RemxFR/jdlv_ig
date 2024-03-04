@@ -1,7 +1,6 @@
-package org.ynov.jdlv_ig.logique;
+package org.ynov.jdlv_ig.entity;
 
 import lombok.*;
-import org.ynov.jdlv_ig.logique.ReglesCustom;
 
 import java.util.ArrayList;
 import java.util.List;
