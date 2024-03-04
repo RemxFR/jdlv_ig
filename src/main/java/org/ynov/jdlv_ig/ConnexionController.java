@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.ynov.jdlv_ig.entity.EViewFXML;
 import org.ynov.jdlv_ig.entity.UserDto;
 import org.ynov.jdlv_ig.http_controller.AuthentificationHttpController;
 import org.ynov.jdlv_ig.entity.User;
@@ -49,7 +50,7 @@ public class ConnexionController {
                 UserDto userDto = response.keySet().iterator().next();
                 UserInfosSingleton.getInstance(userDto);
                 Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                Parent root = FXMLLoader.load(getClass().getResource("game-view.fxml"));
+                Parent root = FXMLLoader.load(getClass().getResource(EViewFXML.GAME_VIEW.getNomView()));
                 Scene gameScene = new Scene(root);
                 window.setScene(gameScene);
                 UserInfosSingleton.setStage(window);
@@ -77,7 +78,7 @@ public class ConnexionController {
 
     @FXML
     void onInscriptionFieldBtnClick(MouseEvent event) throws IOException {
-        Parent inscriptionView = FXMLLoader.load(getClass().getResource("inscription-view.fxml"));
+        Parent inscriptionView = FXMLLoader.load(getClass().getResource(EViewFXML.INSCRIPTION_VIEW.getNomView()));
         Scene inscriptionScene = new Scene(inscriptionView);
 
         Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();

@@ -32,6 +32,8 @@ import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
 
+    private final String REGLES_REGEX = "->r:[%s,%s,%s,%s]";
+    private final String BLACK_BACKGROUND = "-fx-fill: black;";
     @FXML
     private SpinnerValueFactory.IntegerSpinnerValueFactory grilleSpinValeur;
     Matrice matrice;
@@ -113,16 +115,9 @@ public class GameController implements Initializable {
             });
     }
 
-    public GameController() {
-//        Stage stage = UserInfosSingleton.getStage();
-//        stage.setOnCloseRequest(event -> {
-//            ThreadManagerService.killAllThread();
-//            Platform.exit();
-//        });
-    }
-
     @FXML
     protected void lancerjdlv() {
+        this.group.getChildren().clear();
         taille = tailleGrilleSpin.getValueFactory().getValue();
         this.grilleSpinValeur.setValue(taille);
 
@@ -131,7 +126,6 @@ public class GameController implements Initializable {
         Cellule.minPopulationRegeneratrice = this.reproSpin.getValueFactory().getValue();
         matrice = new Matrice(taille, nb);
         GameController.circles = new Circle[taille][taille];
-        group.setStyle("-fx-background-color: black;");
         dessinMatrice(group);
         petitCycle = new Timeline(new KeyFrame(Duration.millis(tempo), actionEvent -> {
             matrice.copierGrille();
@@ -174,7 +168,7 @@ public class GameController implements Initializable {
                 }
                 cell.setCircle(circles[i][j]);
                 root.getChildren().add(circles[i][j]);
-                root.setStyle("-fx-: black;");
+                root.setStyle(BLACK_BACKGROUND);
             }
         }
     }
@@ -185,7 +179,7 @@ public class GameController implements Initializable {
         int repro = this.reproSpin.getValueFactory().getValue();
         int surPop = this.surPoSpin.getValueFactory().getValue();
         int sousPop = this.sousPoSpin.getValueFactory().getValue();
-        String reglesProposees = "->r:[%s,%s,%s,%s]";
+        String reglesProposees = REGLES_REGEX;
         String reglesOk = String.format(reglesProposees, tailleGrille, repro, surPop, sousPop);
         TchatService.creerEtEnvoyerMessage(this.client, this.tchatVBox, reglesOk);
     }

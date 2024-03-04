@@ -21,6 +21,9 @@ public abstract class TchatService {
     private static final String REPRO_SPINNER = "reproSpinr";
     private static final String SURPO_SPINNER = "surpopSpin";
     private static final String SOUSPO_SPINNER = "souspopSpin";
+    private static final String NON = "Non";
+    private static final String OUI = "Oui";
+    private static final String VIRGULE_REGEX = ",";
 
     public static void creerEtEnvoyerMessage(SocketClient client, VBox vBox, String messageAEnvoyer) {
         HBox hBox = new HBox();
@@ -37,7 +40,7 @@ public abstract class TchatService {
 
     public static void afficherMessageRecu(String message, VBox vBox) {
         HBox hBox = new HBox();
-        Button ouiBtn = new Button("Oui");
+        Button ouiBtn = new Button(OUI);
 
         ElementStyleService.styliserHboxAlignementEtPadding(hBox, Pos.CENTER_LEFT);
         String regles = ConvertirMessageEnInstruction.convertirMessageEnInstruction(message);
@@ -49,7 +52,7 @@ public abstract class TchatService {
             public void run() {
                 vBox.getChildren().add(hBox);
                 ouiBtn.addEventHandler(ActionEvent.ACTION, event -> {
-                    String[] reglesValeurs = regles.split(",");
+                    String[] reglesValeurs = regles.split(VIRGULE_REGEX);
                     accepterEtAppliquerRegles(
                             ouiBtn,
                             vBox,
@@ -68,7 +71,7 @@ public abstract class TchatService {
         TextFlow textFlow = null;
         TextFlow textFlowWithoutBtn;
         TextFlow textFlowWithBtn;
-        Button nonBtn = new Button("Non");
+        Button nonBtn = new Button(NON);
         if (regles != null) {
             String reglesProposees = ConvertirMessageEnInstruction.convertirReglesRowEnProposition(regles);
             text = new Text(reglesProposees);

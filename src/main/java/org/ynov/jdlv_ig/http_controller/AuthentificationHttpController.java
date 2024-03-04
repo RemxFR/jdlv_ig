@@ -25,7 +25,7 @@ public class AuthentificationHttpController {
     public void connect(String url) throws IOException {
         URL url1 = new URL(url);
         HttpURLConnection urlConnection = (HttpURLConnection) url1.openConnection();
-        urlConnection.setRequestMethod("GET");
+        urlConnection.setRequestMethod(EHttpHeadersEtURI.GET.getValeur());
         urlConnection.connect();
         BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
         String inputLine;
@@ -41,7 +41,8 @@ public class AuthentificationHttpController {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(EHttpHeadersEtURI.LOCALHOST.getValeur() + CONNEXION + INSCRIPTION))
-                .POST(HttpRequest.BodyPublishers.ofString("{\"login\":" + "\"" + userDto.getLogin() + "\"" + ",\"mdp\":" + "\"" + userDto.getMdp() + "\"" + "}"))
+                .POST(HttpRequest.BodyPublishers.ofString( EHttpHeadersEtURI.LOGIN.getValeur()+ userDto.getLogin()
+                        + EHttpHeadersEtURI.MDP.getValeur()  + userDto.getMdp() + EHttpHeadersEtURI.END.getValeur()))
                 .header(EHttpHeadersEtURI.CONTENT_TYPE.getValeur(), EHttpHeadersEtURI.APPLICATION_JSON.getValeur())
                 .header(EHttpHeadersEtURI.USER_AGENT.getValeur(), EHttpHeadersEtURI.MOZILLA_5_0.getValeur())
                 .build();
@@ -55,9 +56,10 @@ public class AuthentificationHttpController {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(EHttpHeadersEtURI.LOCALHOST.getValeur() + CONNEXION + AUTH))
-                .POST(HttpRequest.BodyPublishers.ofString("{\"login\":" + "\"" + user.getLogin() + "\"" + ",\"mdp\":" + "\"" + user.getMdp() + "\"" + "}"))
-                .header("Content-Type", "application/json")
-                .header("User-Agent", "Mozilla/5.0")
+                .POST(HttpRequest.BodyPublishers.ofString(EHttpHeadersEtURI.LOGIN.getValeur() + user.getLogin()
+                        + EHttpHeadersEtURI.MDP.getValeur() + user.getMdp() + EHttpHeadersEtURI.END.getValeur()))
+                .header(EHttpHeadersEtURI.CONTENT_TYPE.getValeur(), EHttpHeadersEtURI.APPLICATION_JSON.getValeur())
+                .header(EHttpHeadersEtURI.USER_AGENT.getValeur(), EHttpHeadersEtURI.MOZILLA_5_0.getValeur())
                 .build();
 
         try {

@@ -6,18 +6,20 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.ThreadUtils;
+import org.ynov.jdlv_ig.entity.EViewFXML;
 import org.ynov.jdlv_ig.utils.LoggerUtil;
 
 import java.io.IOException;
 
 public class StartApplication extends Application {
+    private final String TITRE = "Jeu de la vie";
     LoggerUtil logger = new LoggerUtil();
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(StartApplication.class.getResource("connexion-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(StartApplication.class.getResource(EViewFXML.CONNEXION_VIEW.getNomView()));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Jeu de la vie");
+        stage.setTitle(TITRE);
         this.logger.log(System.Logger.Level.INFO, "Lancement de la connexion de la Socket");
         stage.setScene(scene);
         stage.setResizable(false);

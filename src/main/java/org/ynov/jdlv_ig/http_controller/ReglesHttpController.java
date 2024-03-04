@@ -16,6 +16,11 @@ public class ReglesHttpController {
     private final String REGLES = "regles/";
     private final String SAUVER = "sauver/";
     private final String RECUPERER = "recuperer/";
+    private final String SURPOP = "{\"surPopulation\":\"";
+    private final String SOUSPOP = "\", \"sousPopulation\":\"";
+    private final String REPRO = "\", \"reproduction\":\"";
+    private final String TAILLE_GRILLE = "\", \"tailleGrille\":\"";
+    private final String USER = "\", \"user\":\"";
 
     public ReglesHttpController() {
     }
@@ -25,11 +30,9 @@ public class ReglesHttpController {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(EHttpHeadersEtURI.LOCALHOST.getValeur() + this.REGLES + this.SAUVER + login))
                 .POST(HttpRequest.BodyPublishers.ofString(
-                        "{\"surPopulation\":" + "\"" + reglesCustom.getSurPopulation() + "\""
-                                + ", \"sousPopulation\":" + "\"" + reglesCustom.getSousPopulation() + "\""
-                                + ", \"reproduction\":" + "\"" + reglesCustom.getReproduction() + "\""
-                                + ", \"tailleGrille\":" + "\"" + reglesCustom.getTailleGrille() + "\""
-                                + ", \"user\":" + "\"" + reglesCustom.getUser() + "\"" + "}"))
+                        SURPOP + reglesCustom.getSurPopulation() + SOUSPOP + reglesCustom.getSousPopulation()
+                                + REPRO + reglesCustom.getReproduction() + TAILLE_GRILLE + reglesCustom.getTailleGrille()
+                                + USER + reglesCustom.getUser() + EHttpHeadersEtURI.END.getValeur()))
                 .header(EHttpHeadersEtURI.CONTENT_TYPE.getValeur(), EHttpHeadersEtURI.APPLICATION_JSON.getValeur())
                 .header(EHttpHeadersEtURI.USER_AGENT.getValeur(), EHttpHeadersEtURI.MOZILLA_5_0.getValeur())
                 .build();
