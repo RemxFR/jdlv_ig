@@ -15,16 +15,45 @@ import javafx.scene.text.TextFlow;
 import org.ynov.jdlv_ig.utils.ConvertirMessageEnInstruction;
 import org.ynov.jdlv_ig.websocket.SocketClient;
 
+/**
+ * Classe qui gère la partie tchat, l'envoie, la création et la récupération des messages.
+ */
 public abstract class TchatService {
-
+    /**
+     * Constante relative à l'id du spinner qui contient la taille de la grille.
+     */
     private static final String TAILLE_GRILLE_SPINNER = "tailleGrilleSpin";
+    /**
+     * Constante relative à l'id du spinner qui contient la valeur de Reproduction.
+     */
     private static final String REPRO_SPINNER = "reproSpinr";
+    /**
+     * Constante relative à l'id du spinner qui contient la valeur de la Sur-population.
+     */
     private static final String SURPO_SPINNER = "surpopSpin";
+    /**
+     * Constante relative à l'id du spinner qui contient la valeur de la Sous-population.
+     */
     private static final String SOUSPO_SPINNER = "souspopSpin";
+    /**
+     * Texte du bouton NON.
+     */
     private static final String NON = "Non";
+    /**
+     * Texte du bouton OUI.
+     */
     private static final String OUI = "Oui";
+    /**
+     * REGEX pour séparer les valeurs des règles reçues.
+     */
     private static final String VIRGULE_REGEX = ",";
 
+    /**
+     *Méthode qui permet de créer les messages et de les envoyer via la socket vers la partie backend.
+     * @param client
+     * @param vBox
+     * @param messageAEnvoyer
+     */
     public static void creerEtEnvoyerMessage(SocketClient client, VBox vBox, String messageAEnvoyer) {
         HBox hBox = new HBox();
         ElementStyleService.styliserHboxAlignementEtPadding(hBox, Pos.CENTER_RIGHT);
@@ -38,6 +67,12 @@ public abstract class TchatService {
         client.sendMessage(messageAEnvoyer);
     }
 
+    /**
+     * Méthode qui permet d'afficher les messages reçus et de gérer la création des boutons pour accepter les règles
+     * proposées par les autres joueurs.
+     * @param message
+     * @param vBox
+     */
     public static void afficherMessageRecu(String message, VBox vBox) {
         HBox hBox = new HBox();
         Button ouiBtn = new Button(OUI);
@@ -65,6 +100,14 @@ public abstract class TchatService {
         });
     }
 
+    /**
+     * Méthode pour convertir le message reçu sous forme de byte en un message affichable par l'applicaiton dans un
+     * TextField.
+     * @param message
+     * @param regles
+     * @param ouiBtn
+     * @return
+     */
     private static TextFlow convertirMessagePourAffichage(String message, String regles, Button ouiBtn) {
         Text text = null;
         TextFlow textFlow = null;
@@ -85,7 +128,16 @@ public abstract class TchatService {
         return textFlow;
     }
 
-
+    /**
+     * Méthode qui permet d'accepter les règles proposées par un autre utilisateur et de les appliquer au paramètres du
+     * joueur.
+     * @param button
+     * @param vBox
+     * @param tailleGrille
+     * @param repro
+     * @param surpop
+     * @param souspop
+     */
     private static void accepterEtAppliquerRegles(Button button, VBox vBox, int tailleGrille, int repro, int surpop, int souspop) {
         AnchorPane anchorPane = (AnchorPane) vBox.getParent().getParent().getParent().getParent();
 
@@ -110,6 +162,13 @@ public abstract class TchatService {
         supprimerBoutonDuCommentaire((TextFlow) button.getParent(), button, buttonNon);
     }
 
+    /**
+     * Méthode qui permet de supprimer les bouton OUI et NON dans le TextField du tchat
+     * après acceptation ou refus des règles d'un autre joueur.
+     * @param textFlow
+     * @param ouiBtn
+     * @param nonBtn
+     */
     public static void supprimerBoutonDuCommentaire(TextFlow textFlow, Button ouiBtn, Button nonBtn) {
         textFlow.getChildren().removeAll(ouiBtn, nonBtn);
         textFlow.isResizable();

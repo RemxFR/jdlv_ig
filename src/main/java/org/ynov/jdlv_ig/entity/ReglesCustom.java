@@ -1,14 +1,46 @@
 package org.ynov.jdlv_ig.entity;
 
-public class ReglesCustom {
+import lombok.Getter;
+import lombok.Setter;
 
+/**
+ * Classe de l'Objet qui représente les règles customisées.
+ */
+@Getter
+@Setter
+public class ReglesCustom {
+    /**
+     * Id.
+     */
     private Integer id;
+    /**
+     * Sur-population, au delà de laquelle les cellule se désactivent.
+     */
     private int surPopulation;
+    /**
+     * Sous-population, en dessous de laquelle les cellule se désactivent.
+     */
     private int sousPopulation;
+    /**
+     * Reproduction, Nombre de cellules nécessaires pour en activer une autre.
+     */
     private int reproduction;
+    /**
+     * Taille de la grille.
+     */
     private int tailleGrille;
+    /**
+     * Utilisateur.
+     */
     private User user;
 
+    /**
+     * Constructeur sans l'id et l'utilisateur.
+     * @param surPopulation
+     * @param sousPopulation
+     * @param reproduction
+     * @param tailleGrille
+     */
     public ReglesCustom(int surPopulation, int sousPopulation, int reproduction, int tailleGrille) {
         this.surPopulation = surPopulation;
         this.sousPopulation = sousPopulation;
@@ -16,6 +48,14 @@ public class ReglesCustom {
         this.tailleGrille = tailleGrille;
     }
 
+    /**
+     * Constructeur sans l'id.
+     * @param surPopulation
+     * @param sousPopulation
+     * @param reproduction
+     * @param tailleGrille
+     * @param user
+     */
     public ReglesCustom(int surPopulation, int sousPopulation, int reproduction, int tailleGrille, User user) {
         this.surPopulation = surPopulation;
         this.sousPopulation = sousPopulation;
@@ -24,54 +64,9 @@ public class ReglesCustom {
         this.user = user;
     }
 
+    /**
+     * Constructeur vide.
+     */
     public ReglesCustom() {
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public int getSurPopulation() {
-        return surPopulation;
-    }
-
-    public void setSurPopulation(int surPopulation) {
-        this.surPopulation = surPopulation;
-    }
-
-    public int getSousPopulation() {
-        return sousPopulation;
-    }
-
-    public void setSousPopulation(int sousPopulation) {
-        this.sousPopulation = sousPopulation;
-    }
-
-    public int getReproduction() {
-        return reproduction;
-    }
-
-    public void setReproduction(int reproduction) {
-        this.reproduction = reproduction;
-    }
-
-    public int getTailleGrille() {
-        return tailleGrille;
-    }
-
-    public void setTailleGrille(int tailleGrille) {
-        this.tailleGrille = tailleGrille;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }

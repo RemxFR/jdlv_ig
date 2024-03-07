@@ -30,56 +30,132 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * Classe qui est en charge de gérer les contrôles de l'affichage qui concerne l'écran de jeu en lui même,
+ * y compris l'appel aux méthodes relatives à la partie tchat.
+ */
 public class GameController implements Initializable {
 
+    /**
+     * Regex qui représentent comment les règles sont formatées au moment de leur envoie.
+     */
     private final String REGLES_REGEX = "->r:[%s,%s,%s,%s]";
+    /**
+     * Couleur noire pour background.
+     */
     private final String BLACK_BACKGROUND = "-fx-fill: black;";
-    @FXML
-    private SpinnerValueFactory.IntegerSpinnerValueFactory grilleSpinValeur;
+    /**
+     * Classe en charge de générer la simulation du jeu de la vie dans une matrice aux valeurs prédéfinies
+     * ou définies par le joueur.
+     */
     Matrice matrice;
+    /**
+     * Objet cercle, affiché comme une cellule dans la grille et possédant une position x et y.
+     */
     public static Circle[][] circles;
+    /**
+     * Vitesse de la simulation.
+     */
     public final int tempo = 100;
-    public Timeline chronologie;
+    /**
+     * Permet de générer à partir de cette valeur la position des cellules.
+     */
     private int espace = 20;
+    /**
+     * Défini la taille de la grille.
+     */
     private int taille;
-    private double nb;
+    /**
+     * Défini la densité de la grille.
+     */
+    private double densite;
+    /**
+     * Défini le login de l'utilisateur et permet de le récupérer pour l'envoie des messages
+     * et l'enregistrement des règles par exemple.
+     */
     @Getter
     @Setter
     private String userName;
+    /**
+     * Objet permettant d'implémenter le cycle de la simulation, de la démarrer et de l'arrêter.
+     */
     private Timeline petitCycle;
-
+    /**
+     * Groupe rassemblant les objets à afficher dans la grille.
+     */
     @FXML
     private Group group;
-
+    /**
+     * Wrapper pour les messages affichés dans le tchat.
+     */
     @FXML
     private TextField tchatTextField;
-
+    /**
+     *Box verticale contenant la partie tchat.
+     */
     @FXML
     private VBox tchatVBox;
-
+    /**
+     * Scroller permettant de scroller dans le tchat.
+     */
     @FXML
     private ScrollPane scrollPane;
-
+    /**
+     * Bouton pour envoyer les règles aux autres joueurs au travers du tchat.
+     */
     @FXML
     private Button propReglesBtn;
-
+    /**
+     * Liste déroulant permettant de changer la valeur du paramètre Sous-population.
+     */
     @FXML
     private Spinner<Integer> sousPoSpin;
+    /**
+     * Liste déroulant permettant de changer la valeur du paramètre Sur-population.
+     */
     @FXML
     Spinner<Integer> surPoSpin;
+    /**
+     * Liste déroulant permettant de changer la valeur du paramètre Reproduction.
+     */
     @FXML
     Spinner<Integer> reproSpin;
+    /**
+     * Spinner qui wrap les valeurs qui définissent la taille de la grille du jeu.
+     */
     @FXML
     Spinner<Integer> tailleGrilleSpin = new Spinner<>(new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 100));
+    /**
+     * Valeurs affichées dans la liste déroulante en charge de définir la taille de la grille du jeu.
+     */
+    @FXML
+    private SpinnerValueFactory.IntegerSpinnerValueFactory grilleSpinValeur;
+    /**
+     * Liste qui permet d'afficher les règles enregistrées par l'utilisateur.
+     */
     @FXML
     ListView<ReglesCustom> reglesListView;
-    private CheckBox tdgCB, tdgSrP, tdgRepro, tdgSsP;
-    @Getter
-    private static int tgs;
+    /**
+     * Socket qui permet de se connecter à la partie backend pour le tchat.
+     */
     private SocketClient client;
+    /**
+     * UserDto, classe équivalente à la classe utilisateur mais sans la liste des règles enregistrées
+     * afin de faciliter le transfer des données sans surcharger les requêtes.
+     */
     private UserDto userDto;
+    /**
+     * Contrôleur qui permet de faire les requêtes Http afin de gérer les différentes méthodes de connexion,
+     * de persistence des données et d'inscription.
+     */
     private ReglesHttpController reglesHttpController = new ReglesHttpController();
 
+    /**
+     * Méthode d'initialisation de la vue du jeu, des valeurs des différents paramètres et lancement de l'écoute
+     * au niveau du tchat.
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
             try {
@@ -90,8 +166,7 @@ public class GameController implements Initializable {
                 this.propReglesBtn.setText("Proposer\nRègles");
                 this.propReglesBtn.setTextAlignment(TextAlignment.CENTER);
                 taille = 100;
-                nb = 0.1;
-                chronologie = new Timeline();
+                densite = 0.1;
                 int largeur = 500;
                 espace = largeur / taille;
                 this.tailleGrilleSpin.getValueFactory().setValue(taille);
@@ -100,31 +175,38 @@ public class GameController implements Initializable {
                 this.reproSpin.getValueFactory().setValue(Cellule.minPopulationRegeneratrice);
                 //this.afficherReglesEnregistrees();
                 this.client.listenForMessage(tchatVBox);
-
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
-            tchatVBox.heightProperty().addListener(new ChangeListener<Number>() {
-                @Override
-                public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
-                    scrollPane.setVvalue((Double) newValue);
-                }
-            });
+        fixerScrollTchatAuDernierMessageReçu();
     }
 
+    /**
+     * Méthode qui permet de d'afficher la vue du tchat au dernier message reçu à partir du moment où les messages reçus
+     * activent le scroll. On verra toujours les derniers, tandis que les premiers ne seront plus visibles si
+     * la taille totale du nombre de message dépasse la hauteur du tchat.
+     */
+    private void fixerScrollTchatAuDernierMessageReçu() {
+        tchatVBox.heightProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
+                scrollPane.setVvalue((Double) newValue);
+            }
+        });
+    }
+
+    /**
+     * Méthode qui permet de lancer une simulation du jeu de la vie.
+     */
     @FXML
     protected void lancerjdlv() {
         this.group.getChildren().clear();
         taille = tailleGrilleSpin.getValueFactory().getValue();
         this.grilleSpinValeur.setValue(taille);
-
         Cellule.sousPopulation = this.sousPoSpin.getValueFactory().getValue();
         Cellule.surPopulation = this.surPoSpin.getValueFactory().getValue();
         Cellule.minPopulationRegeneratrice = this.reproSpin.getValueFactory().getValue();
-        matrice = new Matrice(taille, nb);
+        matrice = new Matrice(taille, densite);
         GameController.circles = new Circle[taille][taille];
         dessinMatrice(group);
         petitCycle = new Timeline(new KeyFrame(Duration.millis(tempo), actionEvent -> {
@@ -135,13 +217,20 @@ public class GameController implements Initializable {
         petitCycle.play();
     }
 
+    /**
+     * Méthode qui permet d'arrêter la simulation en cours.
+     */
     @FXML
     protected void arreterJdlv() {
         this.petitCycle.stop();
         this.group.getChildren().clear();
     }
 
-
+    /**
+     * Méthode qui permet d'écrire dans le tchat et d'envoyer un message lorsque l'on clic sur la touche
+     * Entrée.
+     * @param event
+     */
     @FXML
     protected void ecrireTchat(KeyEvent event) {
         if (!tchatTextField.getText().isEmpty() || !tchatTextField.getText().isBlank()) {
@@ -154,6 +243,10 @@ public class GameController implements Initializable {
         }
     }
 
+    /**
+     * Méthode qui génère/dessine la matrice de la simulation.
+     * @param root
+     */
     private void dessinMatrice(Group root) {
         Cellule[][] grille = matrice.getGrille();
         int rayon = espace / 2;
@@ -173,6 +266,10 @@ public class GameController implements Initializable {
         }
     }
 
+    /**
+     * Méthode qui permet d'envoyer les règles du joueur dans le tchat sous forme de proposition aux autres
+     * joueurs.
+     */
     @FXML
     private void proposerRegles() {
         int tailleGrille = this.tailleGrilleSpin.getValueFactory().getValue();
@@ -184,6 +281,9 @@ public class GameController implements Initializable {
         TchatService.creerEtEnvoyerMessage(this.client, this.tchatVBox, reglesOk);
     }
 
+    /**
+     * Méthode qui permet de sauvegarder les règles du joueur.
+     */
     @FXML
     private void sauvegarderRegles() {
         ReglesCustom reglesCustom = new ReglesCustom(
@@ -195,12 +295,19 @@ public class GameController implements Initializable {
         this.reglesListView.refresh();
     }
 
+    /**
+     * Méthode qui permet de récupérer et d'afficher la liste des règles enregistrées par le joueur.
+     */
     private void afficherReglesEnregistrees() {
         List<ReglesCustom> reglesCustomList = this.recupererRegles();
         ObservableList<ReglesCustom> reglesCustoms = FXCollections.observableArrayList(reglesCustomList);
         reglesListView = new ListView<ReglesCustom>(reglesCustoms);
     }
 
+    /**
+     * Méthode qui retourne depuis le backend la liste de règles enregistrées par le joueur.
+     * @return
+     */
     private List<ReglesCustom> recupererRegles() {
         return reglesHttpController.recupererReglesCustom(this.userDto);
     }

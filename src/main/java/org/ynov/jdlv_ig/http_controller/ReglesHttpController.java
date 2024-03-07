@@ -11,20 +11,55 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 
+/**
+ * Classe qui gère les requêtes Http relatives aux règles de l'utilisateur.
+ */
 public class ReglesHttpController {
-
+    /**
+     * Chemin pour les règles.
+     */
     private final String REGLES = "regles/";
+    /**
+     * Endpoint pour sauver les règles.
+     */
     private final String SAUVER = "sauver/";
+    /**
+     * Endpoint pour récupérer les règles.
+     */
     private final String RECUPERER = "recuperer/";
+    /**
+     * Champ Sur-population en JSON.
+     */
     private final String SURPOP = "{\"surPopulation\":\"";
+    /**
+     * Champ Sous-population en JSON.
+     */
     private final String SOUSPOP = "\", \"sousPopulation\":\"";
+    /**
+     * Champ Reproduction en JSON.
+     */
     private final String REPRO = "\", \"reproduction\":\"";
+    /**
+     * Champ Taille grille en JSON.
+     */
     private final String TAILLE_GRILLE = "\", \"tailleGrille\":\"";
+    /**
+     * Champ Utilisateur en JSON.
+     */
     private final String USER = "\", \"user\":\"";
 
+    /**
+     * Constructeur vide.
+     */
     public ReglesHttpController() {
     }
 
+    /**
+     * Méthode pour sauver les règles en les envoyant au backend pour persistence via une requête sql.
+     * @param reglesCustom
+     * @param login
+     * @return
+     */
     public String sauverRegles(ReglesCustom reglesCustom, String login) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -48,6 +83,11 @@ public class ReglesHttpController {
         return null;
     }
 
+    /**
+     * Méthode pour récupérer les règles enregistrées en bdd, depuis le backend via une requête sql.
+     * @param userDto
+     * @return
+     */
     public List<ReglesCustom> recupererReglesCustom(UserDto userDto) {
         List<ReglesCustom> reglesCustoms = null;
         HttpClient client = HttpClient.newHttpClient();

@@ -12,9 +12,23 @@ import org.ynov.jdlv_ig.utils.LoggerUtil;
 import java.io.IOException;
 
 public class StartApplication extends Application {
+    /**
+     * Titre de la fenêtre de l'application
+     */
     private final String TITRE = "Jeu de la vie";
+    /**
+     * Logger pour afficher les logs relatives à cette vue.
+     */
     LoggerUtil logger = new LoggerUtil();
 
+    /**
+     * Méthode de démarrage de l'application et d'initialisation de la première vue qui est la page de connexion.
+     * @param stage the primary stage for this application, onto which
+     * the application scene can be set.
+     * Applications may create other stages, if needed, but they will not be
+     * primary stages.
+     * @throws IOException
+     */
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(StartApplication.class.getResource(EViewFXML.CONNEXION_VIEW.getNomView()));
@@ -29,6 +43,9 @@ public class StartApplication extends Application {
         });
     }
 
+    /**
+     * Méthode qui permet d'arrêter l'application et de fermer les threads toujours ouverts.
+     */
     @Override
     public void stop() {
 
@@ -48,8 +65,6 @@ public class StartApplication extends Application {
     }
 
     public static void main(String[] args) {
-        while (!Thread.currentThread().isInterrupted()) {
             launch();
-        }
     }
 }

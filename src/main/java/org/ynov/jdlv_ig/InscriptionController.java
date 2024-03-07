@@ -17,13 +17,32 @@ import org.ynov.jdlv_ig.utils.UserInfosSingleton;
 
 import java.io.IOException;
 
+/**
+ * Classe en charge de gérer la partie inscription de l'utilisateur au niveau de l'affichage et de l'appel
+ * des méthodes dédiées à cet effet.
+ */
 public class InscriptionController {
 
+    /**
+     * Champ pour rentrer le login utilisateur
+     */
     @FXML
     private TextField login;
+    /**
+     * Champ pour rentrer le mot de passe utilisateur
+     */
     @FXML
     private PasswordField mdp;
 
+    /**
+     * Méthode permettant à l'utilisateur de créer son profil dans le Jeu de la vie, en entrant son login
+     * et son mot de passe.
+     * Une fois cela fait et validé par la partie backend, cette méthode redirige automatiquement l'utilsateur
+     * vers la page du jeu.
+     * @param event
+     * @throws IOException
+     * @throws InterruptedException
+     */
     @FXML
     public void inscription(ActionEvent event) throws IOException, InterruptedException {
         if ((login != null && !login.equals("")) && (mdp != null && !mdp.equals(""))) {
@@ -44,6 +63,12 @@ public class InscriptionController {
         }
     }
 
+    /**
+     * Méthode qui permet de retourner à l'accueil, qui est la page de connexion, si l'utilisateur ne souahite
+     * plus s'inscrire ou s'est retrouvé sur la page d'inscription par erreur.
+     * @param event
+     * @throws IOException
+     */
     @FXML
     public void retourAccueil(ActionEvent event) throws IOException {
         Parent connexionView = FXMLLoader.load(getClass().getResource(EViewFXML.CONNEXION_VIEW.getNomView()));
