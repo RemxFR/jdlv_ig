@@ -2,14 +2,18 @@ package org.ynov.jdlv_ig;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxListCell;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
@@ -131,10 +135,18 @@ public class GameController implements Initializable {
     @FXML
     private SpinnerValueFactory.IntegerSpinnerValueFactory grilleSpinValeur;
     /**
-     * Liste qui permet d'afficher les règles enregistrées par l'utilisateur.
+     * Table qui permet d'afficher les règles enregistrées par l'utilisateur.
      */
     @FXML
-    ListView<ReglesCustom> reglesListView;
+    TableView<ReglesCustomDto> tableView;
+    @FXML
+    TableColumn<ReglesCustomDto, Integer> grilleTailleColonne;
+    @FXML
+    TableColumn<ReglesCustomDto, Integer> reproColonne;
+    @FXML
+    TableColumn<ReglesCustomDto, Integer> surpopColonne;
+    @FXML
+    TableColumn<ReglesCustomDto, Integer> souspopColonne;
     /**
      * Socket qui permet de se connecter à la partie backend pour le tchat.
      */
@@ -173,7 +185,7 @@ public class GameController implements Initializable {
                 this.sousPoSpin.getValueFactory().setValue(Cellule.sousPopulation);
                 this.surPoSpin.getValueFactory().setValue(Cellule.surPopulation);
                 this.reproSpin.getValueFactory().setValue(Cellule.minPopulationRegeneratrice);
-                //this.afficherReglesEnregistrees();
+                this.afficherReglesEnregistrees(userDto.getReglesCustomList());
                 this.client.listenForMessage(tchatVBox);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -292,23 +304,28 @@ public class GameController implements Initializable {
                 this.reproSpin.getValueFactory().getValue(),
                 this.tailleGrilleSpin.getValueFactory().getValue());
         reglesHttpController.sauverRegles(reglesCustom, this.userDto.getLogin());
-        this.reglesListView.refresh();
+        tableView.getItems().clear();
+        this.afficherReglesEnregistrees(this.recupererRegles());
     }
 
     /**
      * Méthode qui permet de récupérer et d'afficher la liste des règles enregistrées par le joueur.
      */
-    private void afficherReglesEnregistrees() {
-        List<ReglesCustom> reglesCustomList = this.recupererRegles();
-        ObservableList<ReglesCustom> reglesCustoms = FXCollections.observableArrayList(reglesCustomList);
-        reglesListView = new ListView<ReglesCustom>(reglesCustoms);
+    private void afficherReglesEnregistrees(List<ReglesCustomDto> reglesCustomDtoList) {
+        List<ReglesCustomDto> reglesCustomList = reglesCustomDtoList;
+        ObservableList<ReglesCustomDto> reglesCustoms = FXCollections.observableArrayList(reglesCustomList);
+        grilleTailleColonne.setCellValueFactory(new PropertyValueFactory<ReglesCustomDto, Integer>("tailleGrille"));
+        reproColonne.setCellValueFactory(new PropertyValueFactory<ReglesCustomDto, Integer>("reproduction"));
+        souspopColonne.setCellValueFactory(new PropertyValueFactory<ReglesCustomDto, Integer>("sousPopulation"));
+        surpopColonne.setCellValueFactory(new PropertyValueFactory<ReglesCustomDto, Integer>("surPopulation"));
+        tableView.setItems(reglesCustoms);
     }
 
     /**
      * Méthode qui retourne depuis le backend la liste de règles enregistrées par le joueur.
      * @return
      */
-    private List<ReglesCustom> recupererRegles() {
+    private List<ReglesCustomDto> recupererRegles() {
         return reglesHttpController.recupererReglesCustom(this.userDto);
     }
 

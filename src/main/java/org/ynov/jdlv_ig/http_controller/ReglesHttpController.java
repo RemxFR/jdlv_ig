@@ -1,8 +1,12 @@
 package org.ynov.jdlv_ig.http_controller;
 
+import com.google.gson.JsonArray;
+import org.json.JSONArray;
 import org.ynov.jdlv_ig.entity.ReglesCustom;
+import org.ynov.jdlv_ig.entity.ReglesCustomDto;
 import org.ynov.jdlv_ig.entity.User;
 import org.ynov.jdlv_ig.entity.UserDto;
+import org.ynov.jdlv_ig.utils.JsonConverter;
 
 import java.io.IOException;
 import java.net.URI;
@@ -88,8 +92,8 @@ public class ReglesHttpController {
      * @param userDto
      * @return
      */
-    public List<ReglesCustom> recupererReglesCustom(UserDto userDto) {
-        List<ReglesCustom> reglesCustoms = null;
+    public List<ReglesCustomDto> recupererReglesCustom(UserDto userDto) {
+        List<ReglesCustomDto> reglesCustoms = null;
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(EHttpHeadersEtURI.LOCALHOST.getValeur() + this.REGLES + this.RECUPERER + userDto.getLogin()))
@@ -100,6 +104,8 @@ public class ReglesHttpController {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             String respBody = response.body();
+            JSONArray jsonArray = new JSONArray(respBody);
+            reglesCustoms = JsonConverter.mapReglesCustomDtos(jsonArray);
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -5,21 +5,20 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
-<?import javafx.scene.control.SpinnerValueFactory?>
 
-<AnchorPane id="anchorPane" fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0"
-            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ynov.jdlv_ig.GameController" >
+<AnchorPane id="anchorPane" fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ynov.jdlv_ig.GameController">
     <children>
         <SplitPane fx:id="splitPane" dividerPositions="0.29797979797979796" prefHeight="800.0" prefWidth="800.0">
             <items>
@@ -88,8 +87,14 @@
                         <Group id="group" fx:id="group" />
                   <HBox alignment="CENTER" layoutY="571.0" prefHeight="227.0" prefWidth="500.0" spacing="40.0">
                      <children>
-                        <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="169.0" text="Sauver Règles" onAction="#sauvegarderRegles"/>
-                        <ListView fx:id="reglesListView" prefHeight="227.0" prefWidth="361.0" />
+                        <Button mnemonicParsing="false" onAction="#sauvegarderRegles" prefHeight="27.0" prefWidth="169.0" text="Sauver Règles" />
+                        <TableView fx:id="tableView" prefHeight="227.0" prefWidth="361.0">
+                           <columns>
+                              <TableColumn fx:id="grilleTailleColonne" prefWidth="75.0" text="Taille Grille" />
+                              <TableColumn fx:id="reproColonne" prefWidth="75.0" text="Repro" />
+                              <TableColumn fx:id="surpopColonne" prefWidth="75.0" text="Sur-pop" />
+                              <TableColumn fx:id="souspopColonne" prefWidth="75.0" text="Sous-pop" />
+                           </columns></TableView>
                      </children>
                      <opaqueInsets>
                         <Insets left="10.0" />

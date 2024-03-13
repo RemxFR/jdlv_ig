@@ -7,6 +7,7 @@ module org.ynov.jdlv_ig {
     requires java.net.http;
     requires static lombok;
     requires org.json;
+    requires com.google.gson;
     requires org.apache.commons.lang3;
 
     opens org.ynov.jdlv_ig to javafx.fxml;

@@ -4,12 +4,10 @@ package org.ynov.jdlv_ig.http_controller;
 import org.json.JSONObject;
 import org.ynov.jdlv_ig.entity.User;
 import org.ynov.jdlv_ig.entity.UserDto;
-import org.ynov.jdlv_ig.utils.StringToUser;
+import org.ynov.jdlv_ig.utils.JsonConverter;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.net.http.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -98,7 +96,7 @@ public class AuthentificationHttpController {
         Map<UserDto, Integer> responseMap = new HashMap<>();
         if (respBody != null || !respBody.equals("")) {
             JSONObject userJson = new JSONObject(respBody);
-            UserDto userConnected = StringToUser.convertirJsonObjectEnUser(userJson);
+            UserDto userConnected = JsonConverter.convertirJsonObjectEnUser(userJson);
             responseMap.put(userConnected, response.statusCode());
             return responseMap;
         }

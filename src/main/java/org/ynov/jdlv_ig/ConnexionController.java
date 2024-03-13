@@ -8,11 +8,14 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.stage.Popup;
+import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import org.ynov.jdlv_ig.entity.EViewFXML;
 import org.ynov.jdlv_ig.entity.UserDto;
@@ -74,6 +77,11 @@ public class ConnexionController {
                 window.show();
                 window.setOnCloseRequest(e -> Platform.exit());
             }
+        } else {
+            Popup erreurAuthentification = new Popup();
+            erreurAuthentification.setWidth(300);
+            erreurAuthentification.setHeight(300);
+            erreurAuthentification.getContent().addAll(new TextField("Erreur d'authentification"), new Button("OK"));
         }
     }
     /**
